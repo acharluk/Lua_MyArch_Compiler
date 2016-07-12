@@ -26,7 +26,8 @@ function main()
 	end
 
 	-- Process line
-
+	local line 	= in_file_handle:read('*l')
+	local bytes = compileLine(line)
 
 	-- Write bytes
 
@@ -34,11 +35,46 @@ function main()
 	out_file_handle:close()
 end
 
-function compileLine()
+function compileLine(line)
+	local bytes = {}
+	local dec_line = str_split(line)
+	local instruction = compileArch[dec_line[1]]
+	local n_bytes = instruction.n_bytes
+
+	bytes[1] = instruction.opcode
+	for i = 2, n_bytes + 1 do
+		bytes[i] = tonumber(dec_line[i])
+	end
+
+	return bytes
 end
 
 function writeByte()
 end
+
+function str_split(str, reg)
+    reg = reg or "%S+"
+    local spl = {}
+    local count = 1
+
+    for i in string.gmatch(str, reg) do
+        spl[count] = i
+        count = count + 1
+    end
+
+    return spl
+end
+
+compileArch = {
+	["ADD"] = {
+		n_bytes = 1,
+		opcode = 0x01
+	},
+	["MOV"] = {
+		n_bytes = 3,
+		opcode = 0xC0
+	},
+}
 
 local ok, err = pcall(main)
 if not ok then
