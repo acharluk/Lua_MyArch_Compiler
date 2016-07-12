@@ -12,7 +12,7 @@ function main()
 	local outfile = args[2]
 
 	in_file_handle  = io.open(infile, 'r')
-	out_file_handle = io.open(infile, 'wb')
+	out_file_handle = io.open(outfile, 'wb')
 
 	-- Check handles
 	if not in_file_handle then
@@ -26,8 +26,9 @@ function main()
 	end
 
 	-- Process line
-	local line 	= in_file_handle:read('*l')
-	local bytes = compileLine(line)
+	for line in io.lines(infile) do
+		bytes = compileLine(line)
+	end
 
 	-- Write bytes
 
@@ -36,6 +37,8 @@ function main()
 end
 
 function compileLine(line)
+	print("Line: " .. tostring(line))
+	
 	local bytes = {}
 	local dec_line = str_split(line)
 	local instruction = compileArch[dec_line[1]]
