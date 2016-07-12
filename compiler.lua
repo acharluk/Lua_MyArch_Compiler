@@ -15,6 +15,15 @@ function main()
 	out_file_handle = io.open(infile, 'wb')
 
 	-- Check handles
+	if not in_file_handle then
+		io.stderr:write("Error opening input file")
+		return 2
+	end
+
+	if not out_file_handle then
+		io.stderr:write("Error opening output file")
+		return 2
+	end
 
 	-- Process line
 
