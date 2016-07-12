@@ -1,5 +1,6 @@
 local args = { ... }
 local in_file_handle, out_file_handle
+local bytes_written = 0
 
 function main()
 
@@ -27,10 +28,14 @@ function main()
 
 	-- Process line
 	for line in io.lines(infile) do
-		bytes = compileLine(line)
+		local bytes = compileLine(line)
+		-- Write bytes
+		writeBytes(bytes)
 	end
 
-	-- Write bytes
+	for i = bytes_written, 0xFF do
+		writeBytes({0x00})
+	end
 
 	in_file_handle:close()
 	out_file_handle:close()
@@ -38,7 +43,7 @@ end
 
 function compileLine(line)
 	print("Line: " .. tostring(line))
-	
+
 	local bytes = {}
 	local dec_line = str_split(line)
 	local instruction = compileArch[dec_line[1]]
@@ -52,7 +57,11 @@ function compileLine(line)
 	return bytes
 end
 
-function writeByte()
+function writeBytes(bytes)
+	for i = 1, #bytes do
+		out_file_handle:write(string.char( (bytes[i]) ))
+		bytes_written = bytes_written + 1
+	end
 end
 
 function str_split(str, reg)
