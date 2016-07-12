@@ -49,9 +49,10 @@ function compileLine(line)
 	local instruction = compileArch[dec_line[1]]
 	local n_bytes = instruction.n_bytes
 
-	bytes[1] = instruction.opcode
-	for i = 2, n_bytes + 1 do
-		bytes[i] = tonumber(dec_line[i])
+	bytes[1] = instruction.op_code
+	for i = 2, n_bytes do
+		print("BYTE " .. i .. ":"..tostring(dec_line[i]))
+		bytes[i] = tonumber(dec_line[i], 16)
 	end
 
 	return bytes
@@ -78,13 +79,100 @@ function str_split(str, reg)
 end
 
 compileArch = {
+	["NOP"] = {
+		n_bytes = 1,
+		op_code = 0x00
+	},
+
+
 	["ADD"] = {
 		n_bytes = 1,
-		opcode = 0x01
+		op_code = 0x01
 	},
+	["SUB"] = {
+		n_bytes = 1,
+		op_code = 0x02
+	},
+	["MUL"] = {
+		n_bytes = 1,
+		op_code = 0x03
+	},
+	["DIV"] = {
+		n_bytes = 1,
+		op_code = 0x04
+	},
+	["OR"] = {
+		n_bytes = 1,
+		op_code = 0x11
+	},
+	["AND"] = {
+		n_bytes = 1,
+		op_code = 0x12
+	},
+	["XOR"] = {
+		n_bytes = 1,
+		op_code = 0x13
+	},
+
+	["JMP"] = {
+		n_bytes = 2,
+		op_code = 0xEF
+	},
+	["LPC"] = {
+		n_bytes = 2,
+		op_code = 0xE0
+	},
+	["LDA"] = {
+		n_bytes = 2,
+		op_code = 0xE1
+	},
+	["LDB"] = {
+		n_bytes = 2,
+		op_code = 0xE2
+	},
+
+	["SPC"] = {
+		n_bytes = 2,
+		op_code = 0xF0
+	},
+	["STA"] = {
+		n_bytes = 2,
+		op_code = 0xF1
+	},
+	["STB"] = {
+		n_bytes = 2,
+		op_code = 0xF2
+	},
+	["STC"] = {
+		n_bytes = 2,
+		op_code = 0xF3
+	},
+
 	["MOV"] = {
 		n_bytes = 3,
-		opcode = 0xC0
+		op_code = 0xC0
+	},
+
+	["OUT"] = {
+		n_bytes = 3,
+		op_code = 0xA0
+	},
+	["IN"] = {
+		n_bytes = 3,
+		op_code = 0xA1
+	},
+	["OUT_RAW"] = {
+		n_bytes = 3,
+		op_code = 0xB0
+	},
+	["IN_RAW"] = {
+		n_bytes = 3,
+		op_code = 0xB1
+	},
+
+	["HALT"] = {
+		n_bytes = 1,
+		op_code = 0xFF
 	},
 }
 
