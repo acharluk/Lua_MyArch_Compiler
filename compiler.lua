@@ -42,7 +42,10 @@ function main()
 end
 
 function compileLine(line)
-	print("Line: " .. tostring(line))
+	-- Remove comments
+	if line:find(';') then
+		line = line:sub(1, line:find(';') - 1)
+	end
 
 	local bytes = {}
 	local dec_line = str_split(line)
@@ -51,7 +54,6 @@ function compileLine(line)
 
 	bytes[1] = instruction.op_code
 	for i = 2, n_bytes do
-		print("BYTE " .. i .. ":"..tostring(dec_line[i]))
 		bytes[i] = tonumber(dec_line[i], 16)
 	end
 
