@@ -1,6 +1,7 @@
 local args = { ... }
 local in_file_handle, out_file_handle
 local bytes_written = 0
+local last_str_byte = 0xFF
 
 function main()
 
@@ -13,6 +14,7 @@ function main()
 	local outfile = args[2]
 
 	in_file_handle  = io.open(infile, 'r')
+	
 	out_file_handle = io.open(outfile, 'wb')
 
 	-- Check handles
@@ -27,13 +29,38 @@ function main()
 	end
 
 	-- Process line
-	for line in io.lines(infile) do
-		local bytes = compileLine(line)
-		-- Write bytes
-		writeBytes(bytes)
+	for line in io.lines(infile) do		
+
+		-- Strings
+		if line:find('"') then
+			local str = line:sub(line:find('"') + 1, #line - 1)
+			local str_len = #str
+
+			local pos = out_file_handle:seek()
+			out_file_handle:seek("set", last_str_byte - str_len + 1)
+
+			for i = 1, str_len do
+				out_file_handle:write( str:sub(i,i) )
+			end
+
+			out_file_handle:seek("set", pos)
+			last_str_byte = last_str_byte - str_len
+
+			writeBytes({
+				compileArch["OUT"].op_code,
+					last_str_byte + 1,
+					str_len
+				})
+		else
+
+			local bytes = compileLine(line)
+			-- Write bytes
+			writeBytes(bytes)
+		end
 	end
 
-	for i = bytes_written, 0xFF do
+	
+	for i = bytes_written, last_str_byte do
 		writeBytes({0x00})
 	end
 
@@ -54,6 +81,7 @@ function compileLine(line)
 
 	bytes[1] = instruction.op_code
 	for i = 2, n_bytes do
+		print("BYTE:" .. tostring(dec_line[i]))
 		bytes[i] = tonumber(dec_line[i], 16)
 	end
 
