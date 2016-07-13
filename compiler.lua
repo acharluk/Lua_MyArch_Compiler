@@ -81,7 +81,6 @@ function compileLine(line)
 
 	bytes[1] = instruction.op_code
 	for i = 2, n_bytes do
-		print("BYTE:" .. tostring(dec_line[i]))
 		bytes[i] = tonumber(dec_line[i], 16)
 	end
 
