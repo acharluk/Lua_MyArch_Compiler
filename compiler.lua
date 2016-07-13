@@ -33,7 +33,7 @@ function main()
 
 		-- Strings
 		if line:find('"') then
-			local str = line:sub(line:find('"') + 1, #line - 1)
+			local str = line:sub(line:find('"') + 1, line:find('"',line:find('"') + 1) - 1)
 			local str_len = #str
 
 			local pos = out_file_handle:seek()
